@@ -7,7 +7,7 @@ class AntMap:
 
     # 2d list of the columns
     columns = []
-    SIZE = 16.0
+    SIZE = 10.0
     list = -1
 
     def __init__(self):
@@ -18,20 +18,20 @@ class AntMap:
         print("AntMap.read_map")
         file = open('ANTATTCK.TAP', 'rb')
         file.seek(0x603C) # city data starts here
-        for x in range(0, 128):
+        for z in range(0, 128):
             self.columns.append([])
-            for y in range(0, 128):
+            for x in range(0, 128):
                 byte = file.read(1)
                 byte = byte[0] & 0x3f
-                self.columns[x].append(byte)
+                self.columns[z].append(byte)
         #print(self.columns)
 
     def draw(self):
-        for x in range(0, 128):
-            for y in range(0, 128):
-                if self.columns[x][y] == 0:
+        for z in range(0, 128):
+            for x in range(0, 128):
+                if self.columns[z][x] == 0:
                     continue
-                self.draw_column(x, y, self.columns[x][y])
+                self.draw_column(x, z, self.columns[z][x])
             # y
         # x
 
@@ -79,14 +79,14 @@ class AntMap:
             glVertex3f(x1, y0, z0)
 
             # s (x + 1 constant)
-            glColor3fv([0, 1, 1])
+            glColor3fv([0, 1, 0])
             glVertex3f(x1, y0, z0)
             glVertex3f(x1, y1, z0)
             glVertex3f(x1, y1, z1)
             glVertex3f(x1, y0, z1)
 #
             # e (z + 1 constant)
-            glColor3fv([1, 0, 1])
+            glColor3fv([0, 0, 1])
             glVertex3f(x0, y0, z1)
             glVertex3f(x1, y0, z1)
             glVertex3f(x1, y1, z1)

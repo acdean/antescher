@@ -22,34 +22,14 @@ NORTH_EAST = 0
 SOUTH_EAST = 1
 SOUTH_WEST = 2
 NORTH_WEST = 3
-direction = NORTH_EAST
+viewDir = NORTH_EAST
 
-vertices= (
-    (1, -1, -1),
-    (1, 1, -1),
-    (-1, 1, -1),
-    (-1, -1, -1),
-    (1, -1, 1),
-    (1, 1, 1),
-    (-1, -1, 1),
-    (-1, 1, 1)
-    )
-    
-
-edges = (
-    (0,1),
-    (0,3),
-    (0,4),
-    (2,1),
-    (2,3),
-    (2,7),
-    (6,3),
-    (6,4),
-    (6,7),
-    (5,1),
-    (5,4),
-    (5,7)
-    )
+offsets= (
+    (1, 0),     # E
+    (0, 1),     # S
+    (-1, 0),    # W
+    (0, -1)     # N
+)
 
 def Floor():
     glBegin(GL_QUADS)
@@ -58,14 +38,6 @@ def Floor():
     glVertex3i(0, 0, 128 * 16)
     glVertex3i(128 * 16, 0, 128 * 16)
     glVertex3i(128 * 16, 0, 0)
-    glEnd()
-
-def Cube():
-    glColor(1, 1, 1)
-    glBegin(GL_LINES)
-    for edge in edges:
-        for vertex in edge:
-            glVertex3fv(vertices[vertex])
     glEnd()
 
 def Axes():
@@ -94,14 +66,14 @@ def DrawMap():
 
 def main():
     pygame.init()
-    display = (800,600)
+    display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
 #    glTranslatef(0.0, 0.0, -5)
-    dist = 1000
+    dist = 800
     height = dist
-    direction = NORTH_EAST
-    position = [0, 0]
+    viewDir = NORTH_EAST
+    position = [34, 78]
     angle = 0
 
     while True:
@@ -109,29 +81,45 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            # change viewpoint with O and P
             pressed = pygame.key.get_pressed()
+            # q to quit
+            if pressed[pygame.K_q]:
+                pygame.quit()
+                quit()
+            # change view direction with O and P
             if pressed[pygame.K_o]:
-                direction = (direction + 1) % 4
+                viewDir = (viewDir + 1) % 4
             if pressed[pygame.K_p]:
-                direction = (direction + 5) % 4
+                viewDir = (viewDir + 5) % 4
+            # absolute movement using keypad
+            if pressed[pygame.K_KP9]:   # E
+                position[0] += offsets[viewDir][0]
+                position[1] += offsets[viewDir][1]
+            if pressed[pygame.K_KP3]:   # S
+                position[0] += offsets[(viewDir + 1) % 4][0]
+                position[1] += offsets[(viewDir + 1) % 4][1]
+            if pressed[pygame.K_KP1]:   # W
+                position[0] += offsets[(viewDir + 2) % 4][0]
+                position[1] += offsets[(viewDir + 2) % 4][1]
+            if pressed[pygame.K_KP7]:   # N
+                position[0] += offsets[(viewDir + 3) % 4][0]
+                position[1] += offsets[(viewDir + 3) % 4][1]
+            print(position)
 
         #glRotatef(1, 3, 1, 1)
-        angle = (direction + .5) * math.pi / 2;
+        angle = (viewDir + 1.5) * math.pi / 2;
         glLoadIdentity();
-        gluPerspective(10, (display[0]/display[1]), 0.1, 2500.0)
+        gluPerspective(5, (display[0]/display[1]), 0.1, 1500.0)
+        #glTranslatef(400, 300, 0); # centre screen
         gluLookAt(position[0] * 16 + (dist * math.cos(angle)), height, position[1] * 16 + (dist * math.sin(angle)),
             position[0] * 16, 0, position[1] * 16,
             0, 1, 0)
-
-        position[1] += 1
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
         Floor()
-        Cube()
         Axes()
         DrawMap()
         pygame.display.flip()
