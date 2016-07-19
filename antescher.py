@@ -17,6 +17,11 @@ from antmap import AntMap
 antMap = AntMap()
 antMap.read_map()
 
+from displayList import DisplayList
+
+displayLists = DisplayList()
+displayLists.generate()
+
 # directions
 NORTH_EAST = 0
 SOUTH_EAST = 1
@@ -104,7 +109,7 @@ def main():
             if pressed[pygame.K_KP7]:   # N
                 position[0] += offsets[(viewDir + 3) % 4][0]
                 position[1] += offsets[(viewDir + 3) % 4][1]
-            print(position)
+            print("Position: ", position)
 
         #glRotatef(1, 3, 1, 1)
         angle = (viewDir + 1.5) * math.pi / 2;

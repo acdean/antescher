@@ -6,6 +6,7 @@ from OpenGL.GL import *
 class AntMap:
 
     # 2d list of the columns
+    data = []
     columns = []
     SIZE = 10.0
     list = -1
@@ -19,12 +20,21 @@ class AntMap:
         file = open('ANTATTCK.TAP', 'rb')
         file.seek(0x603C) # city data starts here
         for z in range(0, 128):
-            self.columns.append([])
+            self.data.append([])
             for x in range(0, 128):
                 byte = file.read(1)
                 byte = byte[0] & 0x3f
-                self.columns[z].append(byte)
-        #print(self.columns)
+                self.data[z].append(byte)
+        #print(self.data)
+
+    def rationalise_map(self):
+        print("AntMap.rationalise_map")
+        for z in range(0, 128):
+            self.columns.append([])
+            for x in range(0, 128):
+                column = antColumn(x, z, data)
+                self.columns[z].append(column)
+        print("Self Columns: ", self.columns)
 
     def draw(self):
         for z in range(0, 128):
@@ -35,10 +45,35 @@ class AntMap:
             # y
         # x
 
+    def draw2(self, direction):
+        for z in range(0, 128):
+            for x in range(0, 128):
+                if self.columns[z][x] == 0:
+                    continue
+                self.draw_column2(x, z, direction)
+            # y
+        # x
+
     def draw_column(self, x, y, data):
         for z in range(0, 6):
             if ((data & (0x1 << z)) != 0):
                 self.draw_cube(x, z, y)
+
+    def draw_column2(self, x, z, direction):
+        if direction == NORTH_EAST:
+            draw_column_list(x, z, columns[x][z].north)
+            draw_column_list(x, z, columns[x][z].east)
+        if direction == SOUTH_EAST:
+            draw_column_list(x, z, columns[x][z].south)
+            draw_column_list(x, z, columns[x][z].east)
+        if direction == NORTH_WEST:
+            draw_column_list(x, z, columns[x][z].south)
+            draw_column_list(x, z, columns[x][z].west)
+        if direction == NORTH_WEST:
+            draw_column_list(x, z, columns[x][z].north)
+            draw_column_list(x, z, columns[x][z].west)
+        # always draw top
+        draw_column_list(x, z, columns[x][z].top)
 
     def draw_cube(self, x, y, z):
         #print("draw_cube: " + str(x) + ":" + str(y) + ":" + str(z))
