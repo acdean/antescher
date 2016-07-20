@@ -13,14 +13,14 @@ from OpenGL.GLU import *
 import math
 
 from antmap import AntMap
+SIZE = 10
 
-antMap = AntMap()
+antMap = AntMap(SIZE)
 antMap.read_map()
 
 from displayList import DisplayList
 
 displayLists = DisplayList()
-displayLists.generate()
 
 # directions
 NORTH_EAST = 0
@@ -73,6 +73,8 @@ def main():
     pygame.init()
     display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+    
+    displayLists.generate(SIZE)
 
 #    glTranslatef(0.0, 0.0, -5)
     dist = 800
@@ -88,7 +90,7 @@ def main():
                 quit()
             pressed = pygame.key.get_pressed()
             # q to quit
-            if pressed[pygame.K_q]:
+            if pressed[pygame.K_q] or pressed[pygame.K_ESCAPE]:
                 pygame.quit()
                 quit()
             # change view direction with O and P
@@ -109,12 +111,12 @@ def main():
             if pressed[pygame.K_KP7]:   # N
                 position[0] += offsets[(viewDir + 3) % 4][0]
                 position[1] += offsets[(viewDir + 3) % 4][1]
-            print("Position: ", position)
+            #print("Position: ", position)
 
         #glRotatef(1, 3, 1, 1)
         angle = (viewDir + 1.5) * math.pi / 2;
-        glLoadIdentity();
-        gluPerspective(5, (display[0]/display[1]), 0.1, 1500.0)
+        glLoadIdentity()
+        gluPerspective(6, (display[0]/display[1]), 0.1, 1500.0)
         #glTranslatef(400, 300, 0); # centre screen
         gluLookAt(position[0] * 16 + (dist * math.cos(angle)), height, position[1] * 16 + (dist * math.sin(angle)),
             position[0] * 16, 0, position[1] * 16,

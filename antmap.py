@@ -5,15 +5,17 @@ from OpenGL.GL import *
 
 class AntMap:
 
+    colours = [[.7, .7, .7], [.3, .3, .3], [.5, .5, .5]]
     # 2d list of the columns
     data = []
     columns = []
-    SIZE = 10.0
     list = -1
+    size = 0
 
-    def __init__(self):
+    def __init__(self, size):
         print("AntMap")
         self.data = []
+        self.size = size
 
     def read_map(self):
         print("AntMap.read_map")
@@ -23,7 +25,7 @@ class AntMap:
             self.data.append([])
             for x in range(0, 128):
                 byte = file.read(1)
-                byte = byte[0] & 0x3f
+                byte = ord(byte[0]) & 0x3f # shouldn't need this - binary
                 self.data[z].append(byte)
         #print(self.data)
 
@@ -36,15 +38,17 @@ class AntMap:
                 self.columns[z].append(column)
         print("Self Columns: ", self.columns)
 
+    # old version - draws all cubes
     def draw(self):
         for z in range(0, 128):
             for x in range(0, 128):
-                if self.columns[z][x] == 0:
+                if self.data[z][x] == 0:
                     continue
-                self.draw_column(x, z, self.columns[z][x])
+                self.draw_column(x, z, self.data[z][x])
             # y
         # x
 
+    # new version, draws relevant display list
     def draw2(self, direction):
         for z in range(0, 128):
             for x in range(0, 128):
@@ -79,11 +83,11 @@ class AntMap:
         #print("draw_cube: " + str(x) + ":" + str(y) + ":" + str(z))
 
         x0 = 0.0
-        x1 = self.SIZE
+        x1 = self.size
         y0 = 0.0
-        y1 = self.SIZE
+        y1 = self.size
         z0 = 0.0
-        z1 = self.SIZE
+        z1 = self.size
 
         if (self.list == -1):
             # create a new displaylist
@@ -93,35 +97,35 @@ class AntMap:
             glBegin(GL_QUADS)
 
             # top (y + 1 constant
-            glColor3fv([1, 0, 0])
+            glColor3fv(self.colours[0])
             glVertex3f(x0, y1, z0)
             glVertex3f(x0, y1, z1)
             glVertex3f(x1, y1, z1)
             glVertex3f(x1, y1, z0)
 
             # north (x constant)
-            glColor3fv([0, 1, 0])
+            glColor3fv(self.colours[1])
             glVertex3f(x0, y0, z0)
             glVertex3f(x0, y0, z1)
             glVertex3f(x0, y1, z1)
             glVertex3f(x0, y1, z0)
 
             # w (z constant)
-            glColor3fv([0, 0, 1])
+            glColor3fv(self.colours[2])
             glVertex3f(x0, y0, z0)
             glVertex3f(x0, y1, z0)
             glVertex3f(x1, y1, z0)
             glVertex3f(x1, y0, z0)
 
             # s (x + 1 constant)
-            glColor3fv([0, 1, 0])
+            glColor3fv(self.colours[1])
             glVertex3f(x1, y0, z0)
             glVertex3f(x1, y1, z0)
             glVertex3f(x1, y1, z1)
             glVertex3f(x1, y0, z1)
-#
+
             # e (z + 1 constant)
-            glColor3fv([0, 0, 1])
+            glColor3fv(self.colours[2])
             glVertex3f(x0, y0, z1)
             glVertex3f(x1, y0, z1)
             glVertex3f(x1, y1, z1)
@@ -131,8 +135,8 @@ class AntMap:
             glEndList()
         # end create list
 
-        # print("drawing list" + str(self.list))
+        #print("drawing list: " + str(self.list))
         glPushMatrix()
-        glTranslate(x * self.SIZE, y * self.SIZE, z * self.SIZE)
+        glTranslate(x * self.size, y * self.size, z * self.size)
         glCallList(self.list)
         glPopMatrix()
