@@ -3,7 +3,10 @@ __date__ = "$18-Jul-2016 10:42:42$"
 
 from OpenGL.GL import *
 
+
 class AntMap:
+
+    MAP_SIZE = 128
 
     colours = [[.7, .7, .7], [.3, .3, .3], [.5, .5, .5]]
     data = [] # 2d list holding binary data read from file
@@ -21,9 +24,9 @@ class AntMap:
         blocks = 0;
         file = open('ANTATTCK.TAP', 'rb')
         file.seek(0x603C) # city data starts here
-        for z in range(0, 128):
+        for z in range(0, self.MAP_SIZE):
             self.data.append([])
-            for x in range(0, 128):
+            for x in range(0, self.MAP_SIZE):
                 byte = file.read(1)
                 #byte = ord(byte[0]) & 0x3f # shouldn't need this - binary
                 byte = byte[0] & 0x3f # shouldn't need this - binary
@@ -34,21 +37,21 @@ class AntMap:
             # for x
         # for z
         #print(self.data)
-        print(blocks, " blocks out of ", (128 * 128))
+        print(blocks, " blocks out of ", (self.MAP_SIZE * self.MAP_SIZE))
 
     def rationalise_map(self):
         print("AntMap.rationalise_map")
-        for z in range(0, 128):
+        for z in range(0, MAP_SIZE):
             self.columns.append([])
-            for x in range(0, 128):
+            for x in range(0, MAP_SIZE):
                 column = antColumn(x, z, data)
                 self.columns[z].append(column)
         print("Self Columns: ", self.columns)
 
     # old version - draws all cubes
     def draw(self):
-        for z in range(0, 128):
-            for x in range(0, 128):
+        for z in range(0, self.MAP_SIZE):
+            for x in range(0, self.MAP_SIZE):
                 if self.data[z][x] == 0:
                     continue
                 self.draw_column(x, z, self.data[z][x])
@@ -57,8 +60,8 @@ class AntMap:
 
     # new version, draws relevant display list
     def draw2(self, direction):
-        for z in range(0, 128):
-            for x in range(0, 128):
+        for z in range(0, self.MAP_SIZE):
+            for x in range(0, self.MAP_SIZE):
                 if self.columns[z][x] == 0:
                     continue
                 self.draw_column2(x, z, direction)

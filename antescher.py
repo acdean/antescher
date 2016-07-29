@@ -13,8 +13,8 @@ from OpenGL.GLU import *
 import math
 
 from antmap import AntMap
+
 BLOCK_SIZE = 6
-MAP_SIZE = 128
 
 antMap = AntMap(BLOCK_SIZE)
 antMap.read_map()
@@ -41,15 +41,15 @@ def Floor():
     glBegin(GL_QUADS)
     glColor(1, 1, 1)
     glVertex3i(0, 0, 0)
-    glVertex3i(0, 0, MAP_SIZE * BLOCK_SIZE)
-    glVertex3i(MAP_SIZE * BLOCK_SIZE, 0, MAP_SIZE * BLOCK_SIZE)
-    glVertex3i(MAP_SIZE * BLOCK_SIZE, 0, 0)
+    glVertex3i(0, 0, AntMap.MAP_SIZE * BLOCK_SIZE)
+    glVertex3i(AntMap.MAP_SIZE * BLOCK_SIZE, 0, AntMap.MAP_SIZE * BLOCK_SIZE)
+    glVertex3i(AntMap.MAP_SIZE * BLOCK_SIZE, 0, 0)
     glEnd()
 
 def Axes():
     # axes (x and z are raised slightly to get them up off the floor)
     glPushMatrix()
-    glTranslate((MAP_SIZE / 2) * BLOCK_SIZE, 0, (MAP_SIZE / 2) * BLOCK_SIZE)
+    glTranslate((AntMap.MAP_SIZE / 2) * BLOCK_SIZE, 0, (AntMap.MAP_SIZE / 2) * BLOCK_SIZE)
     glBegin(GL_LINES)
     # x
     glColor(255, 0, 0)

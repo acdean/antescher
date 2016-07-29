@@ -19,11 +19,11 @@ class AntColumn:
                 self.north = data[x][z]
             else:
                 self.north = data[x][z] & ~data[x - 1][z]
-            if z + 1 >= 128:
+            if z + 1 >= MAP_SIZE:
                 self.east  = data[x][z]
             else:
                 self.east  = data[x][z] & ~data[x][z + 1]
-            if x + 1 >= 128:
+            if x + 1 >= MAP_SIZE:
                 self.south = data[x][z]
             else:
                 self.south = data[x][z] & ~data[x + 1][z]
