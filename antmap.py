@@ -6,28 +6,35 @@ from OpenGL.GL import *
 class AntMap:
 
     colours = [[.7, .7, .7], [.3, .3, .3], [.5, .5, .5]]
-    # 2d list of the columns
-    data = []
-    columns = []
+    data = [] # 2d list holding binary data read from file
+    columns = [] # 2d list of Columns
     list = -1
-    size = 0
+    blockSize = 0
 
-    def __init__(self, size):
+    def __init__(self, blockSize):
         print("AntMap")
         self.data = []
-        self.size = size
+        self.blockSize = blockSize
 
     def read_map(self):
         print("AntMap.read_map")
+        blocks = 0;
         file = open('ANTATTCK.TAP', 'rb')
         file.seek(0x603C) # city data starts here
         for z in range(0, 128):
             self.data.append([])
             for x in range(0, 128):
                 byte = file.read(1)
-                byte = ord(byte[0]) & 0x3f # shouldn't need this - binary
+                #byte = ord(byte[0]) & 0x3f # shouldn't need this - binary
+                byte = byte[0] & 0x3f # shouldn't need this - binary
                 self.data[z].append(byte)
+                if (byte != 0):
+                    blocks += 1
+                # fi
+            # for x
+        # for z
         #print(self.data)
+        print(blocks, " blocks out of ", (128 * 128))
 
     def rationalise_map(self):
         print("AntMap.rationalise_map")
@@ -45,8 +52,8 @@ class AntMap:
                 if self.data[z][x] == 0:
                     continue
                 self.draw_column(x, z, self.data[z][x])
-            # y
-        # x
+            # x
+        # z
 
     # new version, draws relevant display list
     def draw2(self, direction):
@@ -55,13 +62,15 @@ class AntMap:
                 if self.columns[z][x] == 0:
                     continue
                 self.draw_column2(x, z, direction)
-            # y
-        # x
+            # x
+        # z
 
     def draw_column(self, x, y, data):
         for z in range(0, 6):
             if ((data & (0x1 << z)) != 0):
                 self.draw_cube(x, z, y)
+            # fi
+        # z
 
     def draw_column2(self, x, z, direction):
         if direction == NORTH_EAST:
@@ -83,11 +92,11 @@ class AntMap:
         #print("draw_cube: " + str(x) + ":" + str(y) + ":" + str(z))
 
         x0 = 0.0
-        x1 = self.size
+        x1 = self.blockSize
         y0 = 0.0
-        y1 = self.size
+        y1 = self.blockSize
         z0 = 0.0
-        z1 = self.size
+        z1 = self.blockSize
 
         if (self.list == -1):
             # create a new displaylist
@@ -137,6 +146,6 @@ class AntMap:
 
         #print("drawing list: " + str(self.list))
         glPushMatrix()
-        glTranslate(x * self.size, y * self.size, z * self.size)
+        glTranslate(x * self.blockSize, y * self.blockSize, z * self.blockSize)
         glCallList(self.list)
         glPopMatrix()

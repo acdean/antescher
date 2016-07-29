@@ -13,9 +13,10 @@ from OpenGL.GLU import *
 import math
 
 from antmap import AntMap
-SIZE = 10
+BLOCK_SIZE = 6
+MAP_SIZE = 128
 
-antMap = AntMap(SIZE)
+antMap = AntMap(BLOCK_SIZE)
 antMap.read_map()
 
 from displayList import DisplayList
@@ -40,28 +41,31 @@ def Floor():
     glBegin(GL_QUADS)
     glColor(1, 1, 1)
     glVertex3i(0, 0, 0)
-    glVertex3i(0, 0, 128 * 16)
-    glVertex3i(128 * 16, 0, 128 * 16)
-    glVertex3i(128 * 16, 0, 0)
+    glVertex3i(0, 0, MAP_SIZE * BLOCK_SIZE)
+    glVertex3i(MAP_SIZE * BLOCK_SIZE, 0, MAP_SIZE * BLOCK_SIZE)
+    glVertex3i(MAP_SIZE * BLOCK_SIZE, 0, 0)
     glEnd()
 
 def Axes():
-    # axes
+    # axes (x and z are raised slightly to get them up off the floor)
     glPushMatrix()
-    glTranslate(64 * 16, 0, 64 * 16)
+    glTranslate((MAP_SIZE / 2) * BLOCK_SIZE, 0, (MAP_SIZE / 2) * BLOCK_SIZE)
     glBegin(GL_LINES)
+    # x
     glColor(255, 0, 0)
-    glVertex3i(-1000, 0, 0)
+    glVertex3i(-1000, 2, 0)
     glColor(255, 255, 0)
-    glVertex3i(1000, 0, 0)
+    glVertex3i(1000, 2, 0)
+    # y
     glColor(0, 255, 0)
-    glVertex3i(0, -1000, 0)
+    glVertex3i(0, 2, 0)
     glColor(0, 255, 255)
     glVertex3i(0, 1000, 0)
+    # z
     glColor(0, 0, 255)
-    glVertex3i(0, 0, -1000)
+    glVertex3i(0, 2, -1000)
     glColor(255, 0, 255)
-    glVertex3i(0, 0, 1000)
+    glVertex3i(0, 2, 1000)
     glEnd()
     glPopMatrix()
 
@@ -74,13 +78,13 @@ def main():
     display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
     
-    displayLists.generate(SIZE)
+    displayLists.generate(BLOCK_SIZE)
 
 #    glTranslatef(0.0, 0.0, -5)
     dist = 800
     height = dist
     viewDir = NORTH_EAST
-    position = [34, 78]
+    position = [64, 129] # gate?
     angle = 0
 
     while True:
@@ -118,8 +122,8 @@ def main():
         glLoadIdentity()
         gluPerspective(6, (display[0]/display[1]), 0.1, 1500.0)
         #glTranslatef(400, 300, 0); # centre screen
-        gluLookAt(position[0] * 16 + (dist * math.cos(angle)), height, position[1] * 16 + (dist * math.sin(angle)),
-            position[0] * 16, 0, position[1] * 16,
+        gluLookAt(position[0] * BLOCK_SIZE + (dist * math.cos(angle)), height, position[1] * BLOCK_SIZE + (dist * math.sin(angle)),
+            position[0] * BLOCK_SIZE, 0, position[1] * BLOCK_SIZE,
             0, 1, 0)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
