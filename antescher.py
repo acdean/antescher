@@ -77,7 +77,7 @@ def main():
     pygame.init()
     display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-    
+
     displayLists.generate(BLOCK_SIZE)
 
 #    glTranslatef(0.0, 0.0, -5)
@@ -120,7 +120,8 @@ def main():
         #glRotatef(1, 3, 1, 1)
         angle = (viewDir + 1.5) * math.pi / 2;
         glLoadIdentity()
-        gluPerspective(6, (display[0]/display[1]), 0.1, 1500.0)
+        print("display: ",  display)
+        gluPerspective(6, (display[0]/display[1]), 1.0, 1500.0)
         #glTranslatef(400, 300, 0); # centre screen
         gluLookAt(position[0] * BLOCK_SIZE + (dist * math.cos(angle)), height, position[1] * BLOCK_SIZE + (dist * math.sin(angle)),
             position[0] * BLOCK_SIZE, 0, position[1] * BLOCK_SIZE,
@@ -136,4 +137,5 @@ def main():
         pygame.display.flip()
         pygame.time.wait(10)
 
-main()
+if __name__ == '__main__':
+    main()

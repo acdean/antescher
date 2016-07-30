@@ -28,8 +28,8 @@ class AntMap:
             self.data.append([])
             for x in range(0, self.MAP_SIZE):
                 byte = file.read(1)
-                #byte = ord(byte[0]) & 0x3f # shouldn't need this - binary
-                byte = byte[0] & 0x3f # shouldn't need this - binary
+                byte = ord(byte[0]) & 0x3f # shouldn't need this - binary
+                #byte = byte[0] & 0x3f
                 self.data[z].append(byte)
                 if (byte != 0):
                     blocks += 1
