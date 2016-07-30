@@ -5,14 +5,63 @@
 from OpenGL.GL import *
 
 class DisplayList:
-    block_lists = []
     column = []
 
 #    def __init__(self):
 
-    def generate(self, size):
+    def generate(self,  size):
+        for i in range(0,  64):
+            if (i == 0):
+                # 0 = no blocks
+                self.column.append(-1)
+            else :
+                glList = glGenLists(1)
+                glNewList(glList, GL_COMPILE);
+                glBegin(GL_QUADS)
+                self.calcList(i,  size)
+                glEnd()
+                glEndList()
+                self.column.append(glList)
+            # end if
+        # end i
+        print(self.column);
+
+    def calcList(self,  i,  size):
+        print("")
+        print "i: %d" % i
+        start = -1
+        # 7 is ok here. it will always be 0
+        # it also makes sure the last block is always terminated
+        for b in range(0, 7):
+            bit = 1 << b;
+            if ((i & bit) == bit):
+                print "block: %d" % i
+                # found a block
+                if (start == -1):
+                    start = b
+                    print "start: %d" % start
+                # end if
+            else: #
+                print("no block: ",  b)
+                # found no block
+                if (start != -1):
+                    print "line: %d - %d" % (start, b)
+                    # there is a current group so finish it
+                    # this is the east facing quad. do more? rotate this?
+                    glVertex3f(0,  start * size,  0)
+                    glVertex3f(size,  start * size,  0)
+                    glVertex3f(size,  b * size,  0)
+                    glVertex3f(0,  b * size,  0)
+                # end if
+                start = -1
+            # end if
+        # end for
+
+    # unused
+    def generateOld(self, size):
         for d in range(0, 5):       # directions
             self.block_lists.append([])
+            self.column.append([])
             for i in range(1, 6):   # blocks
                 x0 = 0
                 y0 = 0
@@ -54,55 +103,29 @@ class DisplayList:
                 self.block_lists[d].append(l)
             # for i
             print("BLOCK LISTS:", self.block_lists)
-            
-            # define the columns
-            column[d].append(0) # 0 - do nothing
 
-            column[d].append(block_lists[d][1]); # 1 000001
+            # define the columns
+            self.column[d].append(0) # 0 - do nothing
+
+            self.column[d].append(self.block_lists[d][1]); # 1 000001
 
             l = glGenLists(1)
             glNewList(l, GL_COMPILE);
             glPushMatrix()
-            glTranslate(size)
-            glDrawList(display_lists[d][1])
+            glTranslate(size,  0,  0)
+            glCallList(self.display_lists[d][1])
             glPopMatrix()
             glEndList()
-            column[d].append(l); # 2 000010 - 1 translated
+            self.column[d].append(l); # 2 000010 - 1 translated
 
-            column[d].append(block_lists[d][2]); # 3 000011
-
-            # for i = 0 to 63
-            # if i & this == this
-            # then we can use this in the list
-            # then remove this - i = i & ~this
-            # repeat until i = 0
-
-            # 63 111111
-            
-            # 62 111110
-            # 31 011111
-            
-            # 15 001111
-            # 30 011110
-            # 60 111100
-            
-            #  7 000111
-            # 14 001110
-            # 28 011100
-            # 56 111000
-            
-            #  3 000011
-            #  6 000110
-            # 12 001100
-            # 24 011000
-            # 48 110000
-            
-            #  1 000001
-            #  2 000010
-            #  4 000100
-            #  8 001000
-            # 16 010000
-            # 32 100000
-
+            self.column[d].append(self.block_lists[d][2]); # 3 000011
         # for d
 
+if __name__ == '__main__':
+    print("test")
+    d = DisplayList()
+    d.calcList(1,  16)
+    d.calcList(2,  16)
+    d.calcList(3,  16)
+    d.calcList(7,  16)
+    d.calcList(0b101010,  16)
