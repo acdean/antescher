@@ -39,7 +39,7 @@ offsets= (
 
 def Floor():
     glBegin(GL_QUADS)
-    glColor(1, 1, 1)
+    glColor(.9, .9, .9)
     glVertex3i(0, 0, 0)
     glVertex3i(0, 0, AntMap.MAP_SIZE * BLOCK_SIZE)
     glVertex3i(AntMap.MAP_SIZE * BLOCK_SIZE, 0, AntMap.MAP_SIZE * BLOCK_SIZE)
@@ -120,7 +120,7 @@ def main():
         #glRotatef(1, 3, 1, 1)
         angle = (viewDir + 1.5) * math.pi / 2;
         glLoadIdentity()
-        print("display: ",  display)
+        #print("display: ",  display)
         gluPerspective(6, (display[0]/display[1]), 1.0, 1500.0)
         #glTranslatef(400, 300, 0); # centre screen
         gluLookAt(position[0] * BLOCK_SIZE + (dist * math.cos(angle)), height, position[1] * BLOCK_SIZE + (dist * math.sin(angle)),
